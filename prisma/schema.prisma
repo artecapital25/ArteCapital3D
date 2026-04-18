@@ -1,0 +1,228 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ==========================================
+// AUTH & USERS
+// ==========================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(OPERARIO)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  OPERARIO
+}
+
+// ==========================================
+// CLIENTES
+// ==========================================
+
+model Cliente {
+  id            String        @id @default(cuid())
+  codigo        String        @unique
+  nombre        String
+  nit           String?
+  telefono      String?
+  correo        String?
+  informacion   String?
+  cotizaciones  Cotizacion[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+// ==========================================
+// INVENTARIO - RESINAS
+// ==========================================
+
+model Resina {
+  id                 String        @id @default(cuid())
+  tipo               String
+  marca              String
+  color              String
+  volumenLitros      Float
+  densidad           Float         // g/cm3
+  pesoGramos         Float
+  valor              Float
+  valorGramo         Float
+  velocidadImpresion Float         // mm/h
+  resumen            String?
+  cotizaciones       Cotizacion[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+// ==========================================
+// INVENTARIO - INSUMOS
+// ==========================================
+
+model Insumo {
+  id          String   @id @default(cuid())
+  codigoItem  String   @unique
+  nombre      String
+  marca       String?
+  categoria   String?
+  volumen     Float?
+  valor       Float
+  valorUnidad Float
+  linkCompra  String?
+  stock       Int      @default(0)
+  stockMinimo Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==========================================
+// MAQUINARIA
+// ==========================================
+
+model Maquina {
+  id             String        @id @default(cuid())
+  nombre         String
+  tipo           String        // impresora | curado | pintura
+  consumoEnergia Float         // kW/h
+  valorMinuto    Float
+  cotizaciones   Cotizacion[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+// ==========================================
+// PERSONAL
+// ==========================================
+
+model Personal {
+  id          String   @id @default(cuid())
+  nombre      String
+  valorHora   Float
+  valorMinuto Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==========================================
+// COTIZACIONES
+// ==========================================
+
+model Cotizacion {
+  id                 String    @id @default(cuid())
+  numeroCot          String    @unique
+  clienteId          String
+  cliente            Cliente   @relation(fields: [clienteId], references: [id])
+  maquinaId          String?
+  maquina            Maquina?  @relation(fields: [maquinaId], references: [id])
+  resinaId           String?
+  resina             Resina?   @relation(fields: [resinaId], references: [id])
+  item               String
+  descripcion        String?
+  cantidad           Int       @default(1)
+  tiempoDesarrollo   Float     // minutos
+  tiempoArmado       Float
+  tiempoPintura      Float
+  tiempoImpresion    Float
+  volumenPieza       Float?    // cm3
+  costoEnergia       Float     @default(0)
+  costoResina        Float     @default(0)
+  costoManoObra      Float     @default(0)
+  costoInsumos       Float     @default(0)
+  porcentajeGanancia Float     @default(30)
+  costoBase          Float     @default(0)
+  valorUnidad        Float
+  valorTotal         Float
+  estado             String    @default("pendiente") // pendiente | aceptado | rechazado
+  fecha              DateTime  @default(now())
+  pedido             Pedido?
+  items              CotizacionItem[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model CotizacionItem {
+  id            String     @id @default(cuid())
+  cotizacionId  String
+  cotizacion    Cotizacion @relation(fields: [cotizacionId], references: [id], onDelete: Cascade)
+  item          String
+  descripcion   String?
+  cantidad      Int        @default(1)
+  unidad        String?
+  valorUnitario Float
+  subtotal      Float
+}
+
+// ==========================================
+// PEDIDOS (ÓRDENES DE TRABAJO)
+// ==========================================
+
+model Pedido {
+  id            String        @id @default(cuid())
+  numeroPedido  String        @unique
+  cotizacionId  String        @unique
+  cotizacion    Cotizacion    @relation(fields: [cotizacionId], references: [id])
+  estado        EstadoPedido  @default(COTIZADO)
+  fechaCreacion DateTime      @default(now())
+  fechaEntrega  DateTime?
+  notas         String?
+  historial     HistorialPedido[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum EstadoPedido {
+  COTIZADO
+  APROBADO
+  EN_PROCESO
+  EN_ENVIO
+  ENTREGADO
+  CANCELADO
+}
+
+model HistorialPedido {
+  id             String       @id @default(cuid())
+  pedidoId       String
+  pedido         Pedido       @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  estadoAnterior EstadoPedido
+  estadoNuevo    EstadoPedido
+  nota           String?
+  fecha          DateTime     @default(now())
+}
+
+// ==========================================
+// ÓRDENES DE COMPRA
+// ==========================================
+
+model OrdenCompra {
+  id             String            @id @default(cuid())
+  numeroOrden    String            @unique
+  proveedor      String
+  estado         String            @default("pendiente") // pendiente | recibida | cancelada
+  total          Float
+  items          OrdenCompraItem[]
+  fechaCreacion  DateTime          @default(now())
+  fechaRecepcion DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model OrdenCompraItem {
+  id            String      @id @default(cuid())
+  ordenId       String
+  orden         OrdenCompra @relation(fields: [ordenId], references: [id], onDelete: Cascade)
+  insumoId      String
+  cantidad      Int
+  valorUnitario Float
+  subtotal      Float
+}
