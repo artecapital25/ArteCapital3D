@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arte Capital Admin System
 
-## Getting Started
+<p align="center">
+  <strong>Sistema de Gestión de Impresión 3D</strong>
+</p>
 
-First, run the development server:
+## Descripción del Proyecto
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Arte Capital Admin System es una aplicación web Full-Stack moderna diseñada para gestionar de manera integral el negocio de impresión 3D. Este proyecto representa la evolución del manejo de datos pasando de hojas de cálculo (Google Sheets) a una plataforma de administración robusta y escalable construida con **Next.js**.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+El sistema se encarga de la gestión de inventario, seguimiento de clientes, control de datos maestros y reportes financieros, presentando un panel de control intuitivo con métricas en tiempo real.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Características Principales
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 📊 **Dashboard y KPIs:** Visualización de métricas en tiempo real mediante gráficos interactivos con `Recharts`.
+- 🗄️ **Gestión de CRUD Completa:** Módulos para administrar clientes, inventarios y datos maestros apoyados por validación fuerte utilizando `Zod`.
+- 🔐 **Seguridad y Autenticación:** Sistema de acceso protegido mediante `NextAuth.js`, encriptación de contraseñas con `bcryptjs` y protección de rutas.
+- 📄 **Exportación de Reportes:** Generación de facturas/reportes en formato PDF (`@react-pdf/renderer`) y exportables directamente a Excel (`xlsx`).
+- 📱 **Progressive Web App (PWA):** Interfaz optimizada e instalable en dispositivos móviles para facilitar el fácil acceso.
+- 📧 **Notificaciones/Correos:** Integración de notificaciones transaccionales usando `Resend`.
 
-## Learn More
+## Tecnologías Utilizadas
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework:** [Next.js](https://nextjs.org/) (App Router, Server Actions)
+- **Lenguaje:** [TypeScript](https://www.typescriptlang.org/)
+- **Estilos:** [Tailwind CSS v4](https://tailwindcss.com/) y componentes modernos (React 19).
+- **Base de Datos:** PostgreSQL (alojada en Neon) controlada mediante el ORM [Prisma](https://www.prisma.io/).
+- **Componentes UI/Iconos:** [Lucide React](https://lucide.dev/), `@tanstack/react-table` (para tablas de datos).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Requisitos Previos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Asegúrate de tener instalados los siguientes requerimientos en tu entorno:
 
-## Deploy on Vercel
+- Node.js (v18.x o superior)
+- npm, yarn, pnpm o bun
+- Una base de datos PostgreSQL (ej. Neon Tech)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Instalación y Configuración
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Clonar el repositorio**
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd admin-3d
+   ```
+
+2. **Instalar dependencias**
+   ```bash
+   npm install
+   ```
+
+3. **Configurar el Entorno**
+   Crea un archivo `.env` en la raíz del proyecto. Este archivo debe contener variables fundamentales como:
+   ```env
+   # Configuración de Base de Datos
+   DATABASE_URL="postgresql://user:password@host/dbname?schema=public"
+
+   # Secretos de NextAuth
+   NEXTAUTH_SECRET="tu_secreto_super_seguro"
+   NEXTAUTH_URL="http://localhost:3000"
+
+   # Claves API
+   RESEND_API_KEY="re_..."
+   ```
+
+4. **Configurar la Base de Datos (Prisma)**
+   Genera el cliente y aplica las migraciones a tu base de datos:
+   ```bash
+   npm run db:push
+   # o
+   npm run db:migrate
+   ```
+   *Opcional*: Para popular la base de datos con información semilla:
+   ```bash
+   npm run db:seed
+   ```
+
+5. **Levantar el Servidor de Desarrollo**
+   ```bash
+   npm run dev
+   ```
+   La aplicación estará disponible en [http://localhost:3000](http://localhost:3000).
+
+## Comandos Útiles
+
+- `npm run dev`: Inicia el servidor en modo desarrollo.
+- `npm run build`: Compila la aplicación para producción.
+- `npm run start`: Inicia el servidor en modo producción.
+- `npm run db:studio`: Abre una interfaz gráfica para administrar la base de datos Prisma.
+
+## Despliegue
+
+Este proyecto está optimizado para su despliegue a través de plataformas como **Vercel** o directamente utilizando proveedores de VPS. Asegúrate de configurar todas las variables de entorno (`.env`) en tu entorno de producción y ejecutar las migraciones de base de datos antes de hacer el *build*.
