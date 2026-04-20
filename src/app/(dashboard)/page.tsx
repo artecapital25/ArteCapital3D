@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { DollarSign, PackageOpen, TrendingUp, AlertTriangle } from "lucide-react";
 import GraficosRendimiento from "@/components/dashboard/GraficosRendimiento";
