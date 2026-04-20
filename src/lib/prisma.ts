@@ -7,10 +7,25 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
+  // En producción (Vercel/serverless) SIEMPRE usar DATABASE_URL (pgbouncer, puerto 6543).
+  // DIRECT_URL (puerto 5432) agota las conexiones en funciones serverless.
+  // Solo usamos DIRECT_URL en desarrollo local si está disponible para migraciones,
+  // pero el runtime siempre debe usar el pooler.
+  const connectionString = process.env.DATABASE_URL!;
+
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+
   const pool = new Pool({
-    connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL!,
+    connectionString,
     ssl: { rejectUnauthorized: false },
+    // Límites conservadores para entornos serverless
+    max: 5,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 10000,
   });
+
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
