@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import styles from "./login.module.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,36 +20,51 @@ export default function LoginPage() {
 
     try {
       const result = await signIn("credentials", {
-        email,
+        email: email.toLowerCase().trim(),
         password,
         redirect: false,
       });
 
-      if (result?.error) {
-        setError(result.error);
-      } else {
+      if (!result) {
+        setError("No se pudo conectar con el servidor. Intenta de nuevo.");
+        return;
+      }
+
+      if (result.error) {
+        // Mapeamos errores técnicos a mensajes amigables
+        const errorMessages: Record<string, string> = {
+          CredentialsSignin: "Email o contraseña incorrectos.",
+          "No se encontró el usuario": "Email o contraseña incorrectos.",
+          "Contraseña incorrecta": "Email o contraseña incorrectos.",
+        };
+        setError(errorMessages[result.error] ?? "Error al iniciar sesión. Intenta de nuevo.");
+        return;
+      }
+
+      if (result.ok) {
         router.push("/");
         router.refresh();
       }
-    } catch {
-      setError("Error al iniciar sesión");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Error de conexión. Verifica tu red e intenta de nuevo.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
+    <div className={styles.loginContainer}>
       {/* Background effects */}
-      <div className="login-bg-pattern" />
-      <div className="login-bg-glow login-bg-glow-1" />
-      <div className="login-bg-glow login-bg-glow-2" />
-      <div className="login-bg-glow login-bg-glow-3" />
+      <div className={styles.loginBgPattern} />
+      <div className={`${styles.loginBgGlow} ${styles.loginBgGlow1}`} />
+      <div className={`${styles.loginBgGlow} ${styles.loginBgGlow2}`} />
+      <div className={`${styles.loginBgGlow} ${styles.loginBgGlow3}`} />
 
-      <div className="login-card animate-scale-in">
+      <div className={`${styles.loginCard} ${styles.animateScaleIn}`}>
         {/* Logo / Header */}
-        <div className="login-header">
-          <div className="login-logo">
+        <div className={styles.loginHeader}>
+          <div className={styles.loginLogo}>
             <Image
               src="/logo.png"
               alt="Arte Capital - Precisión Creativa"
@@ -58,23 +74,23 @@ export default function LoginPage() {
               style={{ objectFit: "contain", filter: "drop-shadow(0 0 15px rgba(0, 180, 216, 0.3))" }}
             />
           </div>
-          <h1 className="login-title">Arte Capital</h1>
-          <p className="login-subtitle">Precisión Creativa — Panel de Administración</p>
+          <h1 className={styles.loginTitle}>Arte Capital</h1>
+          <p className={styles.loginSubtitle}>Precisión Creativa — Panel de Administración</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className={styles.loginForm} noValidate>
           {error && (
-            <div className="login-error animate-fade-in">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <div className={`${styles.loginError} ${styles.animateFadeIn}`} role="alert">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4.25a.75.75 0 011.5 0v3.5a.75.75 0 01-1.5 0v-3.5zM8 11a1 1 0 100 2 1 1 0 000-2z" />
               </svg>
               {error}
             </div>
           )}
 
-          <div className="login-field">
-            <label htmlFor="login-email" className="login-label">
+          <div className={styles.loginField}>
+            <label htmlFor="login-email" className={styles.loginLabel}>
               Correo electrónico
             </label>
             <input
@@ -83,14 +99,15 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@artecapital.com"
-              className="login-input"
+              className={styles.loginInput}
               required
               autoComplete="email"
+              autoFocus
             />
           </div>
 
-          <div className="login-field">
-            <label htmlFor="login-password" className="login-label">
+          <div className={styles.loginField}>
+            <label htmlFor="login-password" className={styles.loginLabel}>
               Contraseña
             </label>
             <input
@@ -99,7 +116,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="login-input"
+              className={styles.loginInput}
               required
               autoComplete="current-password"
             />
@@ -108,216 +125,21 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="login-button"
+            className={styles.loginButton}
+            id="btn-login-submit"
           >
             {loading ? (
-              <span className="login-spinner" />
+              <span className={styles.loginSpinner} aria-label="Cargando..." />
             ) : (
               "Iniciar sesión"
             )}
           </button>
         </form>
 
-        <p className="login-footer">
+        <p className={styles.loginFooter}>
           Arte Capital — Sistema de Administración v1.0
         </p>
       </div>
-
-      <style jsx>{`
-        .login-container {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          overflow: hidden;
-          padding: 1rem;
-        }
-
-        .login-bg-pattern {
-          position: absolute;
-          inset: 0;
-          background-image: radial-gradient(rgba(0, 180, 216, 0.06) 1px, transparent 1px);
-          background-size: 30px 30px;
-          z-index: 0;
-        }
-
-        .login-bg-glow {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(120px);
-          z-index: 0;
-        }
-
-        .login-bg-glow-1 {
-          width: 400px;
-          height: 400px;
-          background: rgba(0, 180, 216, 0.25);
-          top: -100px;
-          right: -100px;
-        }
-
-        .login-bg-glow-2 {
-          width: 350px;
-          height: 350px;
-          background: rgba(233, 30, 140, 0.2);
-          bottom: -80px;
-          left: -80px;
-        }
-
-        .login-bg-glow-3 {
-          width: 200px;
-          height: 200px;
-          background: rgba(247, 127, 0, 0.15);
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
-
-        .login-card {
-          position: relative;
-          z-index: 1;
-          width: 100%;
-          max-width: 440px;
-          background: linear-gradient(135deg, rgba(21, 21, 37, 0.95), rgba(14, 14, 26, 0.98));
-          backdrop-filter: blur(20px);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-xl);
-          padding: 2.5rem;
-          box-shadow: var(--shadow-lg), var(--shadow-glow);
-        }
-
-        .login-header {
-          text-align: center;
-          margin-bottom: 2rem;
-        }
-
-        .login-logo {
-          display: inline-flex;
-          margin-bottom: 0.75rem;
-        }
-
-        .login-title {
-          font-size: 1.75rem;
-          font-weight: 800;
-          background: var(--gradient-primary);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          letter-spacing: -0.02em;
-        }
-
-        .login-subtitle {
-          color: var(--text-secondary);
-          font-size: 0.8125rem;
-          margin-top: 0.25rem;
-        }
-
-        .login-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
-        }
-
-        .login-error {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem 1rem;
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          border-radius: var(--radius-md);
-          color: #fca5a5;
-          font-size: 0.875rem;
-        }
-
-        .login-field {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .login-label {
-          font-size: 0.8125rem;
-          font-weight: 500;
-          color: var(--text-secondary);
-        }
-
-        .login-input {
-          width: 100%;
-          padding: 0.75rem 1rem;
-          background: var(--bg-input);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-md);
-          color: var(--text-primary);
-          font-size: 0.9375rem;
-          font-family: inherit;
-          transition: all 0.2s ease;
-        }
-
-        .login-input::placeholder {
-          color: var(--text-muted);
-        }
-
-        .login-input:focus {
-          outline: none;
-          border-color: var(--accent-primary);
-          box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.15);
-        }
-
-        .login-button {
-          width: 100%;
-          padding: 0.875rem;
-          background: var(--gradient-primary);
-          border: none;
-          border-radius: var(--radius-md);
-          color: white;
-          font-size: 0.9375rem;
-          font-weight: 600;
-          font-family: inherit;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 48px;
-          margin-top: 0.5rem;
-        }
-
-        .login-button:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3), 0 4px 15px rgba(233, 30, 140, 0.2);
-        }
-
-        .login-button:active:not(:disabled) {
-          transform: translateY(0);
-        }
-
-        .login-button:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
-        .login-spinner {
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-top-color: white;
-          border-radius: 50%;
-          animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
-        .login-footer {
-          text-align: center;
-          margin-top: 2rem;
-          font-size: 0.75rem;
-          color: var(--text-muted);
-        }
-      `}</style>
     </div>
   );
 }
