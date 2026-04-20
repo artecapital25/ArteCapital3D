@@ -16,20 +16,19 @@ export default function SubmitButton({
   fullWidth = true,
 }: SubmitButtonProps) {
   return (
-    <>
-      <button
-        type="submit"
-        disabled={loading}
-        className={`submit-btn submit-btn-${variant} ${fullWidth ? "submit-full" : ""}`}
-      >
-        {loading ? (
-          <>
-            <span className="submit-spinner" />
-            {loadingText}
-          </>
-        ) : (
-          text
-        )}
-      </button>
+    <button
+      type="submit"
+      disabled={loading}
+      className={`submit-btn submit-btn-${variant} ${fullWidth ? "submit-full" : ""}`}
+    >
+      {loading ? (
+        <>
+          <span className="submit-spinner" />
+          {loadingText}
+        </>
+      ) : (
+        text
+      )}
+    </button>
   );
 }
