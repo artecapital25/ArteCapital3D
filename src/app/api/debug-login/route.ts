@@ -5,57 +5,45 @@ import bcrypt from "bcryptjs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const pw = searchParams.get("pw") || "admin12345";
-  const email = "admin@artecapital.com";
-
   try {
-    // 1. Check database connectivity
-    console.log("[DEBUG] Verificando conexión a base de datos...");
-    const userCount = await prisma.user.count();
+    // Intentamos hacer un query en crudo (RAW) saltándonos el chequeo de modelos de Prisma
+    const dbName: any[] = await prisma.$queryRaw`SELECT current_database();`;
+    const userRole: any[] = await prisma.$queryRaw`SELECT current_user;`;
     
-    // 2. Query user
-    console.log(`[DEBUG] Buscando usuario: ${email}`);
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    // Consultar las tablas existentes en esta DB fantasma de Vercel
+    const tables: any[] = await prisma.$queryRaw`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public';
+    `;
 
-    if (!user) {
-      return NextResponse.json({
-        success: false,
-        step: "find_user",
-        error: "Usuario no encontrado en la base de datos de Vercel",
-        dbConnected: true,
-        totalUsersInDb: userCount,
-      });
+    // Obtener la string limpia que está viendo Vercel sin exponer la clave
+    const rawUrl = process.env.DATABASE_URL || "";
+    let safeUrl = rawUrl;
+    if (safeUrl.includes("@")) {
+      const parts = safeUrl.split("@");
+      const prefix = parts[0].substring(0, parts[0].indexOf(":") + 3);
+      safeUrl = prefix + "***oculto***@" + parts[1];
+    } else {
+      safeUrl = "Formato de URL irreconocible o vacía";
     }
 
-    // 3. Test Bcrypt logic
-    console.log("[DEBUG] Validando contraseña con bcrypt...");
-    const isValid = await bcrypt.compare(pw, user.password);
-
     return NextResponse.json({
-      success: isValid,
-      step: "bcrypt_compare",
-      dbConnected: true,
-      userFound: true,
-      userRole: user.role,
-      passwordMatch: isValid,
-      totalUsersInDb: userCount,
-      dbUrlMode: process.env.DATABASE_URL?.includes("6543") ? "POOLER" : "DIRECT",
-      env: {
-        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-        nextAuthUrl: process.env.NEXTAUTH_URL,
-      }
+      mensaje: "Investigación Forense de Vercel",
+      baseDeDatosActual: dbName[0]?.current_database || "Desconocida",
+      usuarioConectado: userRole[0]?.current_user || "Desconocido",
+      urlExactaInterpretada: safeUrl,
+      tablasEncontradas: tables.map(t => t.table_name),
+      tieneComillasLaUrl: rawUrl.startsWith('"') || rawUrl.endsWith('"'),
+      nextAuthSecretExiste: !!process.env.NEXTAUTH_SECRET,
     });
 
   } catch (error: any) {
-    console.error("[DEBUG] Excepción general:", error);
     return NextResponse.json({
       success: false,
-      step: "exception",
+      paso: "falla_conexion_extrema",
       error: error.message || error.toString(),
-      isDatabaseError: error.message?.includes("Prisma"),
+      urlExactaInterpretada: process.env.DATABASE_URL?.replace(/:[^:@]+@/, ":***oculto***@"),
     }, { status: 500 });
   }
 }
