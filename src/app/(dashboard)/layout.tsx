@@ -22,6 +22,7 @@ import {
   Wrench,
   UserCog,
 } from "lucide-react";
+import styles from "./dashboard.module.css";
 
 interface NavItem {
   label: string;
@@ -76,6 +77,23 @@ const navItems: NavItem[] = [
   },
 ];
 
+function getBreadcrumb(pathname: string): string {
+  const segments: Record<string, string> = {
+    "/": "Dashboard",
+    "/clientes": "Clientes",
+    "/inventario": "Inventario",
+    "/inventario/resinas": "Inventario / Resinas",
+    "/inventario/insumos": "Inventario / Insumos",
+    "/cotizaciones": "Cotizaciones",
+    "/pedidos": "Pedidos",
+    "/ordenes-compra": "Órdenes de Compra",
+    "/maestros": "Maestros",
+    "/maestros/maquinaria": "Maestros / Maquinaria",
+    "/maestros/personal": "Maestros / Personal",
+  };
+  return segments[pathname] || "Arte Capital";
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -100,20 +118,20 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="dashboard-layout">
+    <div className={styles.dashboardLayout}>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="sidebar-overlay"
+          className={styles.sidebarOverlay}
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
         {/* Sidebar Header */}
-        <div className="sidebar-header">
-          <div className="sidebar-logo">
+        <div className={styles.sidebarHeader}>
+          <div className={styles.sidebarLogo}>
             <Image
               src="/logo.png"
               alt="Arte Capital"
@@ -121,53 +139,54 @@ export default function DashboardLayout({
               height={40}
               style={{ objectFit: "contain" }}
             />
-            <div className="sidebar-logo-text">
-              <span className="sidebar-brand">Arte Capital</span>
-              <span className="sidebar-version">Precisión Creativa</span>
+            <div className={styles.sidebarLogoText}>
+              <span className={styles.sidebarBrand}>Arte Capital</span>
+              <span className={styles.sidebarVersion}>Precisión Creativa</span>
             </div>
           </div>
           <button
-            className="sidebar-close-btn"
+            className={styles.sidebarCloseBtn}
             onClick={() => setSidebarOpen(false)}
+            aria-label="Cerrar menú"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="sidebar-nav">
+        <nav className={styles.sidebarNav}>
           {navItems.map((item) => (
-            <div key={item.label} className="nav-group">
+            <div key={item.label} className={styles.navGroup}>
               {item.children ? (
                 <>
                   <button
-                    className={`nav-item nav-parent ${
-                      isActive(item.href) ? "nav-active" : ""
+                    className={`${styles.navItem} ${styles.navParent} ${
+                      isActive(item.href) ? styles.navActive : ""
                     }`}
                     onClick={() => toggleExpanded(item.label)}
                   >
-                    <span className="nav-icon">{item.icon}</span>
-                    <span className="nav-label">{item.label}</span>
+                    <span className={styles.navIcon}>{item.icon}</span>
+                    <span className={styles.navLabel}>{item.label}</span>
                     <ChevronDown
                       size={16}
-                      className={`nav-chevron ${
-                        expandedItems.includes(item.label) ? "nav-chevron-open" : ""
+                      className={`${styles.navChevron} ${
+                        expandedItems.includes(item.label) ? styles.navChevronOpen : ""
                       }`}
                     />
                   </button>
                   {expandedItems.includes(item.label) && (
-                    <div className="nav-children animate-fade-in">
+                    <div className={`${styles.navChildren} animate-fade-in`}>
                       {item.children.map((child) => (
                         <Link
                           key={child.href}
                           href={child.href}
-                          className={`nav-item nav-child ${
-                            isActive(child.href) ? "nav-active" : ""
+                          className={`${styles.navItem} ${styles.navChild} ${
+                            isActive(child.href) ? styles.navActive : ""
                           }`}
                           onClick={() => setSidebarOpen(false)}
                         >
-                          <span className="nav-icon">{child.icon}</span>
-                          <span className="nav-label">{child.label}</span>
+                          <span className={styles.navIcon}>{child.icon}</span>
+                          <span className={styles.navLabel}>{child.label}</span>
                         </Link>
                       ))}
                     </div>
@@ -176,13 +195,13 @@ export default function DashboardLayout({
               ) : (
                 <Link
                   href={item.href}
-                  className={`nav-item ${
-                    isActive(item.href) ? "nav-active" : ""
+                  className={`${styles.navItem} ${
+                    isActive(item.href) ? styles.navActive : ""
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >
-                  <span className="nav-icon">{item.icon}</span>
-                  <span className="nav-label">{item.label}</span>
+                  <span className={styles.navIcon}>{item.icon}</span>
+                  <span className={styles.navLabel}>{item.label}</span>
                 </Link>
               )}
             </div>
@@ -190,388 +209,56 @@ export default function DashboardLayout({
         </nav>
 
         {/* User section */}
-        <div className="sidebar-user">
-          <div className="sidebar-user-info">
-            <div className="sidebar-avatar">
+        <div className={styles.sidebarUser}>
+          <div className={styles.sidebarUserInfo}>
+            <div className={styles.sidebarAvatar}>
               {session?.user?.name?.[0]?.toUpperCase() || "A"}
             </div>
-            <div className="sidebar-user-details">
-              <span className="sidebar-user-name">
+            <div className={styles.sidebarUserDetails}>
+              <span className={styles.sidebarUserName}>
                 {session?.user?.name || "Admin"}
               </span>
-              <span className="sidebar-user-role">
+              <span className={styles.sidebarUserRole}>
                 {(session?.user as { role?: string })?.role || "ADMIN"}
               </span>
             </div>
           </div>
-          <button className="sidebar-logout" onClick={() => signOut()} title="Cerrar sesión">
+          <button
+            className={styles.sidebarLogout}
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
             <LogOut size={18} />
           </button>
         </div>
       </aside>
 
       {/* Main content */}
-      <main className="main-content">
+      <main className={styles.mainContent}>
         {/* Top bar */}
-        <header className="top-bar">
+        <header className={styles.topBar}>
           <button
-            className="mobile-menu-btn"
+            className={styles.mobileMenuBtn}
             onClick={() => setSidebarOpen(true)}
             aria-label="Abrir menú"
           >
             <Menu size={22} />
           </button>
-          <div className="top-bar-breadcrumb">
+          <div className={styles.topBarBreadcrumb}>
             <Wrench size={14} />
             <span>{getBreadcrumb(pathname)}</span>
           </div>
-          <div className="top-bar-right">
-            <span className="top-bar-greeting">
+          <div className={styles.topBarRight}>
+            <span className={styles.topBarGreeting}>
               Hola, {session?.user?.name?.split(" ")[0] || "Admin"}
             </span>
           </div>
         </header>
 
         {/* Page content */}
-        <div className="page-content">{children}</div>
+        <div className={styles.pageContent}>{children}</div>
       </main>
-
-      <style jsx>{`
-        .dashboard-layout {
-          display: flex;
-          min-height: 100vh;
-        }
-
-        /* ========== SIDEBAR ========== */
-        .sidebar {
-          width: var(--sidebar-width);
-          height: 100vh;
-          position: fixed;
-          top: 0;
-          left: 0;
-          z-index: 50;
-          background: var(--bg-secondary);
-          border-right: 1px solid var(--border-color);
-          display: flex;
-          flex-direction: column;
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .sidebar-overlay {
-          display: none;
-        }
-
-        .sidebar-close-btn {
-          display: none;
-        }
-
-        @media (max-width: 1024px) {
-          .sidebar {
-            transform: translateX(-100%);
-          }
-          .sidebar-open {
-            transform: translateX(0);
-          }
-          .sidebar-overlay {
-            display: block;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 40;
-          }
-          .sidebar-close-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: var(--radius-sm);
-          }
-          .sidebar-close-btn:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.05);
-          }
-        }
-
-        .sidebar-header {
-          padding: 1.25rem 1.5rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar-logo {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .sidebar-logo-text {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .sidebar-brand {
-          font-size: 1.125rem;
-          font-weight: 800;
-          background: var(--gradient-primary);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          letter-spacing: -0.02em;
-        }
-
-        .sidebar-version {
-          font-size: 0.625rem;
-          color: var(--text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-        }
-
-        /* ========== NAVIGATION ========== */
-        .sidebar-nav {
-          flex: 1;
-          overflow-y: auto;
-          padding: 1rem 0.75rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.125rem;
-        }
-
-        .nav-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .nav-item {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.625rem 0.875rem;
-          border-radius: var(--radius-md);
-          text-decoration: none;
-          color: var(--text-secondary);
-          font-size: 0.875rem;
-          font-weight: 500;
-          transition: all 0.15s ease;
-          cursor: pointer;
-          background: none;
-          border: none;
-          width: 100%;
-          font-family: inherit;
-          text-align: left;
-        }
-
-        .nav-item:hover {
-          background: rgba(255, 255, 255, 0.04);
-          color: var(--text-primary);
-        }
-
-        .nav-active {
-          background: rgba(0, 180, 216, 0.1) !important;
-          color: var(--accent-primary) !important;
-        }
-
-        .nav-active .nav-icon {
-          color: var(--accent-primary);
-        }
-
-        .nav-icon {
-          display: flex;
-          align-items: center;
-          color: var(--text-muted);
-          transition: color 0.15s ease;
-        }
-
-        .nav-label {
-          flex: 1;
-        }
-
-        .nav-chevron {
-          transition: transform 0.2s ease;
-          color: var(--text-muted);
-        }
-
-        .nav-chevron-open {
-          transform: rotate(180deg);
-        }
-
-        .nav-children {
-          padding-left: 0.5rem;
-        }
-
-        .nav-child {
-          padding-left: 2.25rem;
-          font-size: 0.8125rem;
-        }
-
-        /* ========== USER SECTION ========== */
-        .sidebar-user {
-          padding: 1rem 1.25rem;
-          border-top: 1px solid var(--border-color);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .sidebar-user-info {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .sidebar-avatar {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: var(--gradient-primary);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 0.875rem;
-          color: white;
-        }
-
-        .sidebar-user-details {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .sidebar-user-name {
-          font-size: 0.8125rem;
-          font-weight: 600;
-          color: var(--text-primary);
-        }
-
-        .sidebar-user-role {
-          font-size: 0.6875rem;
-          color: var(--text-muted);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .sidebar-logout {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0.5rem;
-          background: none;
-          border: none;
-          color: var(--text-muted);
-          cursor: pointer;
-          border-radius: var(--radius-sm);
-          transition: all 0.15s ease;
-        }
-
-        .sidebar-logout:hover {
-          color: var(--accent-danger);
-          background: rgba(239, 68, 68, 0.1);
-        }
-
-        /* ========== MAIN CONTENT ========== */
-        .main-content {
-          flex: 1;
-          margin-left: var(--sidebar-width);
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-
-        @media (max-width: 1024px) {
-          .main-content {
-            margin-left: 0;
-          }
-        }
-
-        .top-bar {
-          position: sticky;
-          top: 0;
-          z-index: 30;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0.875rem 1.5rem;
-          background: rgba(8, 8, 16, 0.85);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid var(--border-color);
-        }
-
-        .mobile-menu-btn {
-          display: none;
-          align-items: center;
-          justify-content: center;
-          padding: 0.375rem;
-          background: none;
-          border: none;
-          color: var(--text-secondary);
-          cursor: pointer;
-          border-radius: var(--radius-sm);
-        }
-
-        @media (max-width: 1024px) {
-          .mobile-menu-btn {
-            display: flex;
-          }
-        }
-
-        .mobile-menu-btn:hover {
-          color: var(--text-primary);
-          background: rgba(255, 255, 255, 0.05);
-        }
-
-        .top-bar-breadcrumb {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.8125rem;
-          color: var(--text-secondary);
-        }
-
-        .top-bar-right {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .top-bar-greeting {
-          font-size: 0.875rem;
-          color: var(--text-secondary);
-        }
-
-        .page-content {
-          flex: 1;
-          padding: 1.5rem;
-        }
-
-        @media (max-width: 768px) {
-          .page-content {
-            padding: 1rem;
-          }
-        }
-      `}</style>
     </div>
   );
-}
-
-function getBreadcrumb(pathname: string): string {
-  const segments: Record<string, string> = {
-    "/": "Dashboard",
-    "/clientes": "Clientes",
-    "/inventario": "Inventario",
-    "/inventario/resinas": "Inventario / Resinas",
-    "/inventario/insumos": "Inventario / Insumos",
-    "/cotizaciones": "Cotizaciones",
-    "/pedidos": "Pedidos",
-    "/ordenes-compra": "Órdenes de Compra",
-    "/maestros": "Maestros",
-    "/maestros/maquinaria": "Maestros / Maquinaria",
-    "/maestros/personal": "Maestros / Personal",
-  };
-  return segments[pathname] || "Arte Capital";
 }
