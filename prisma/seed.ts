@@ -9,7 +9,11 @@ async function main() {
   // ==========================================
   // 1. CREAR USUARIO ADMIN
   // ==========================================
-  const adminPassword = await bcrypt.hash("admin123", 12);
+  const rawPassword = process.env.ADMIN_PASSWORD;
+  if (!rawPassword) {
+    throw new Error("La variable de entorno ADMIN_PASSWORD no está definida. Por favor, asegúrate de añadirla a tu archivo .env");
+  }
+  const adminPassword = await bcrypt.hash(rawPassword, 12);
   const admin = await prisma.user.upsert({
     where: { email: "admin@artecapital.com" },
     update: {
@@ -206,8 +210,8 @@ async function main() {
   console.log("\n🎉 Seed completado exitosamente!");
   console.log("\n📋 Credenciales de acceso:");
   console.log("   Email: admin@artecapital.com");
-  console.log("   Password: admin123");
-  console.log("\n⚠️  Recuerda cambiar la contraseña en producción!\n");
+  console.log("   Password: [oculto - cargado desde el archivo .env]");
+  console.log("\n⚠️  ¡No compartas tus claves de producción!\n");
 }
 
 main()
