@@ -5,6 +5,8 @@ interface PageProps {
   searchParams: Promise<{ q?: string }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function CotizacionesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const query = params.q?.trim() || "";

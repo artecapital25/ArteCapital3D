@@ -44,11 +44,11 @@ export async function requireAdmin() {
  */
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-export function checkRateLimit(
+export async function checkRateLimit(
   identifier: string,
   maxRequests: number = 30,
   windowMs: number = 60_000
-): boolean {
+): Promise<boolean> {
   const now = Date.now();
   const entry = rateLimitMap.get(identifier);
 

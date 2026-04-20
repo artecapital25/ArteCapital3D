@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { ArrowLeft, Clock, Package, Zap, Droplets, ArrowRight } from "lucide-react";
 import { formatearMoneda, formatearTiempo } from "@/lib/calculos";
+import "./page.css";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -150,62 +151,7 @@ export default async function PedidoDetallePage({ params }: PageProps) {
         </div>
       </div>
 
-      <style jsx>{`
-        .det-header { margin-bottom: 2rem; }
-        .header-left { display: flex; align-items: center; gap: 1rem; }
-        .back-btn {
-          display: flex; align-items: center; justify-content: center;
-          width: 36px; height: 36px; border-radius: var(--radius-sm);
-          background: var(--bg-card); border: 1px solid var(--border-color);
-          color: var(--text-secondary); text-decoration: none; transition: all 0.15s;
-        }
-        .back-btn:hover { color: var(--text-primary); background: var(--bg-card-hover); }
-        .header-top-row { display: flex; align-items: center; gap: 0.75rem; }
-        .det-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; font-family: 'JetBrains Mono', monospace; }
-        .estado-badge { padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
-        .det-subtitle { color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.25rem; }
-        .text-link { color: var(--accent-primary); text-decoration: none; font-weight: 500; }
-        .text-link:hover { text-decoration: underline; }
 
-        .layout-grid {
-          display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem;
-        }
-        @media (max-width: 900px) { .layout-grid { grid-template-columns: 1fr; } }
-        
-        .col-left { display: flex; flex-direction: column; gap: 1.5rem; }
-        .mt-4 { margin-top: 0; } /* Managed by gap */
-
-        .info-card, .timeline-card {
-          background: var(--bg-card); border: 1px solid var(--border-color);
-          border-radius: var(--radius-lg); padding: 1.5rem;
-        }
-        .card-title {
-          font-size: 0.875rem; font-weight: 700; color: var(--text-primary);
-          margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;
-          text-transform: uppercase; letter-spacing: 0.05em;
-        }
-
-        .info-row {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 0.625rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { font-size: 0.8125rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.375rem; }
-        .info-val { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); text-align: right; max-width: 60%; }
-        .total { font-size: 1.125rem; font-weight: 700; color: var(--accent-primary); font-family: 'JetBrains Mono', monospace; }
-
-        .timeline { display: flex; flex-direction: column; }
-        .timeline-item { display: flex; gap: 1rem; }
-        .timeline-connector { display: flex; flex-direction: column; align-items: center; width: 12px; }
-        .timeline-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-card); box-shadow: 0 0 0 1px var(--border-color); z-index: 2; margin-top: 4px; }
-        .timeline-line { width: 1px; flex: 1; background: var(--border-color); margin: 4px 0; }
-        .timeline-content { padding-bottom: 1.5rem; flex: 1; }
-        .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; }
-        .timeline-estado { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); text-transform: capitalize; }
-        .timeline-date { font-size: 0.75rem; color: var(--text-muted); }
-        .timeline-change { display: flex; align-items: center; font-size: 0.75rem; font-weight: 500; background: rgba(255,255,255,0.02); padding: 4px 8px; border-radius: 4px; margin-bottom: 0.5rem; border: 1px dashed rgba(255,255,255,0.05); display: inline-flex;}
-        .timeline-note { font-size: 0.8125rem; color: var(--text-secondary); background: rgba(0,180,216,0.05); padding: 0.5rem 0.75rem; border-left: 2px solid var(--accent-primary); border-radius: 0 4px 4px 0; font-style: italic; }
-      `}</style>
     </>
   );
 }
