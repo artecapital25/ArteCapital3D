@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { prisma } from "../src/lib/prisma";
@@ -10,16 +11,18 @@ async function main() {
   // ==========================================
   const adminPassword = await bcrypt.hash("admin123", 12);
   const admin = await prisma.user.upsert({
-    where: { email: "admin@admin3d.com" },
-    update: {},
+    where: { email: "admin@artecapital.com" },
+    update: {
+      password: adminPassword,
+    },
     create: {
-      email: "admin@admin3d.com",
+      email: "admin@artecapital.com",
       name: "Administrador",
       password: adminPassword,
       role: Role.ADMIN,
     },
   });
-  console.log(`✅ Usuario admin creado: ${admin.email}`);
+  console.log(`✅ Usuario admin actualizado/creado: ${admin.email}`);
 
   // ==========================================
   // 2. CREAR DATOS DE EJEMPLO - PERSONAL
@@ -202,7 +205,7 @@ async function main() {
 
   console.log("\n🎉 Seed completado exitosamente!");
   console.log("\n📋 Credenciales de acceso:");
-  console.log("   Email: admin@admin3d.com");
+  console.log("   Email: admin@artecapital.com");
   console.log("   Password: admin123");
   console.log("\n⚠️  Recuerda cambiar la contraseña en producción!\n");
 }
