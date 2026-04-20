@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
   );
 
   // Rutas públicas que no requieren autenticación
-  const publicPaths = ["/login", "/api/auth"];
+  const publicPaths = ["/login", "/api/auth", "/api/debug-login"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
   // Si no hay token y no es una ruta pública, redirigir al login
