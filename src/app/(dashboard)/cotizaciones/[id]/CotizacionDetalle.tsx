@@ -66,6 +66,7 @@ interface CotizacionData {
     numeroPedido: string;
     estado: string;
   } | null;
+  items?: any[];
 }
 
 interface Props {

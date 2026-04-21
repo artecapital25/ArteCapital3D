@@ -40,7 +40,7 @@ export default async function CotizacionDetallePage({ params }: PageProps) {
   if (!cotizacion) notFound();
 
   // Load master data for edit mode selects
-  const [clientes, maquinas, resinas, personal] = await Promise.all([
+  const [clientes, maquinas, resinas, personal, insumos] = await Promise.all([
     prisma.cliente.findMany({
       orderBy: { nombre: "asc" },
       select: { id: true, nombre: true, codigo: true },
