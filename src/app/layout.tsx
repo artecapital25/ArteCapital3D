@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   keywords: ["Arte Capital", "impresión 3D", "cotizaciones", "administración", "precisión creativa", "pwa"],
   manifest: "/manifest.json",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo1.png",
+    apple: "/logo1.png",
   },
 };
 

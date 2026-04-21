@@ -133,11 +133,11 @@ export default function DashboardLayout({
         <div className={styles.sidebarHeader}>
           <div className={styles.sidebarLogo}>
             <Image
-              src="/logo.png"
+              src="/logo1.png"
               alt="Arte Capital"
-              width={40}
-              height={40}
-              style={{ objectFit: "contain" }}
+              width={32}
+              height={32}
+              className="rounded-lg"
             />
             <div className={styles.sidebarLogoText}>
               <span className={styles.sidebarBrand}>Arte Capital</span>

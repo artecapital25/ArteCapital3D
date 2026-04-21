@@ -66,7 +66,7 @@ export default function LoginPage() {
         <div className={styles.loginHeader}>
           <div className={styles.loginLogo}>
             <Image
-              src="/logo.png"
+              src="/logo1.png"
               alt="Arte Capital - Precisión Creativa"
               width={120}
               height={120}
