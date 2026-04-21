@@ -28,7 +28,7 @@ export default function GraficosRendimiento({ lineData, pieData }: GraficosRendi
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
       {/* Gráfico 1: Barras */}
-      <div className="bg-[#0e0e1a]/80 border border-white/5 p-5 rounded-xl shadow-lg backdrop-blur-sm">
+      <div className="bg-[#0e0e1a]/80 border border-white/5 p-6 rounded-2xl shadow-lg backdrop-blur-sm">
         <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-wider">Evolución de Cotizaciones</h3>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -41,19 +41,19 @@ export default function GraficosRendimiento({ lineData, pieData }: GraficosRendi
               <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
               <Tooltip 
                 cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                contentStyle={{ backgroundColor: '#1e293b', borderColor: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}
+                contentStyle={{ backgroundColor: '#1e293b', borderColor: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}
                 itemStyle={{ color: '#f8fafc' }}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-              <Bar dataKey="creadas" name="Emitidas" fill="#475569" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="ganadas" name="Aprobadas (Ganadas)" fill="#00b4d8" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="creadas" name="Emitidas" fill="#475569" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="ganadas" name="Aprobadas (Ganadas)" fill="#00b4d8" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Gráfico 2: Torta */}
-      <div className="bg-[#0e0e1a]/80 border border-white/5 p-5 rounded-xl shadow-lg backdrop-blur-sm">
+      <div className="bg-[#0e0e1a]/80 border border-white/5 p-6 rounded-2xl shadow-lg backdrop-blur-sm">
         <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-wider">Distribución de Operaciones</h3>
         <div className="h-[300px] w-full">
           {parsedPieData.length > 0 ? (

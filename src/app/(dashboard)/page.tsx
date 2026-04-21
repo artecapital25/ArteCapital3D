@@ -150,18 +150,18 @@ export default async function DashboardPage() {
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Ingreso Latente */}
-        <div className="bg-[#0e0e1a]/80 border border-[#00b4d8]/20 p-5 rounded-xl shadow-lg relative overflow-hidden backdrop-blur-sm">
+        <div className="bg-[#0e0e1a]/80 border border-[#00b4d8]/20 p-6 rounded-2xl shadow-lg relative overflow-hidden backdrop-blur-sm">
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#00b4d8]/10 blur-3xl rounded-full" />
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">
                 Ingresos Proyectados
               </p>
               <h3 className="text-2xl font-bold text-white font-mono">
                 {formatter.format(data.ingresoLatente)}
               </h3>
             </div>
-            <div className="p-2 bg-[#00b4d8]/10 rounded-lg shrink-0">
+            <div className="p-3 bg-[#00b4d8]/10 rounded-xl shrink-0">
               <DollarSign size={20} className="text-[#00b4d8]" />
             </div>
           </div>
@@ -169,17 +169,17 @@ export default async function DashboardPage() {
         </div>
 
         {/* KPI 2: Pedidos Activos */}
-        <div className="bg-[#0e0e1a]/80 border border-white/5 p-5 rounded-xl shadow-lg relative overflow-hidden backdrop-blur-sm">
+        <div className="bg-[#0e0e1a]/80 border border-white/5 p-6 rounded-2xl shadow-lg relative overflow-hidden backdrop-blur-sm">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">
                 Pedidos Activos
               </p>
               <h3 className="text-2xl font-bold text-white font-mono">
                 {data.pedidosActivosCount}
               </h3>
             </div>
-            <div className="p-2 bg-emerald-500/10 rounded-lg shrink-0">
+            <div className="p-3 bg-emerald-500/10 rounded-xl shrink-0">
               <PackageOpen size={20} className="text-emerald-500" />
             </div>
           </div>
@@ -187,17 +187,17 @@ export default async function DashboardPage() {
         </div>
 
         {/* KPI 3: Cotizaciones mes */}
-        <div className="bg-[#0e0e1a]/80 border border-white/5 p-5 rounded-xl shadow-lg relative overflow-hidden backdrop-blur-sm">
+        <div className="bg-[#0e0e1a]/80 border border-white/5 p-6 rounded-2xl shadow-lg relative overflow-hidden backdrop-blur-sm">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">
                 Cots. del Mes
               </p>
               <h3 className="text-2xl font-bold text-white font-mono">
                 {data.cotizacionesMensuales}
               </h3>
             </div>
-            <div className="p-2 bg-violet-500/10 rounded-lg shrink-0">
+            <div className="p-3 bg-violet-500/10 rounded-xl shrink-0">
               <TrendingUp size={20} className="text-violet-500" />
             </div>
           </div>
@@ -207,18 +207,18 @@ export default async function DashboardPage() {
         </div>
 
         {/* KPI 4: Alertas Stock */}
-        <div className="bg-[#0e0e1a]/80 border border-amber-500/20 p-5 rounded-xl shadow-lg relative overflow-hidden backdrop-blur-sm">
+        <div className="bg-[#0e0e1a]/80 border border-amber-500/20 p-6 rounded-2xl shadow-lg relative overflow-hidden backdrop-blur-sm">
           <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 blur-3xl rounded-full" />
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">
                 Alertas Insumos
               </p>
               <h3 className="text-2xl font-bold text-white font-mono">
                 {data.alertasInventario.length}
               </h3>
             </div>
-            <div className="p-2 bg-amber-500/10 rounded-lg shrink-0">
+            <div className="p-3 bg-amber-500/10 rounded-xl shrink-0">
               <AlertTriangle size={20} className="text-amber-500" />
             </div>
           </div>
