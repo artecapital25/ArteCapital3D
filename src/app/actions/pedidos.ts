@@ -25,7 +25,7 @@ export async function crearPedido(cotizacionId: string): Promise<ActionResult> {
   // 1. Verificar cotización
   const cotizacion = await prisma.cotizacion.findUnique({
     where: { id: cotizacionId },
-    include: { pedido: true },
+    include: { pedido: true, items: true },
   });
 
   if (!cotizacion) return { success: false, message: "Cotización no encontrada" };
@@ -64,9 +64,27 @@ export async function crearPedido(cotizacionId: string): Promise<ActionResult> {
           pedidoId: nuevoPedido.id,
           estadoAnterior: "COTIZADO",
           estadoNuevo: "APROBADO",
-          nota: "Pedido creado automáticamente desde cotización aprobada.",
+          nota: "Pedido creado automáticamente desde cotización aprobada. Inventario descontado.",
         },
       });
+
+      // 4. Descuento Automático de Inventario (Insumos)
+      // La cantidad a descontar es (Cantidad de Insumo por Unidad) multiplicado por (Cantidad de Unidades de la Cotización)
+      if (cotizacion.items && cotizacion.items.length > 0) {
+        for (const item of cotizacion.items) {
+          if (item.insumoId) {
+            const cantidadTotalDescontable = item.cantidad * cotizacion.cantidad;
+            await tx.insumo.update({
+              where: { id: item.insumoId },
+              data: {
+                stock: {
+                  decrement: cantidadTotalDescontable,
+                },
+              },
+            });
+          }
+        }
+      }
 
       return nuevoPedido;
     });

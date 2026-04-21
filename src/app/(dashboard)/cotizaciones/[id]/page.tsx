@@ -33,6 +33,7 @@ export default async function CotizacionDetallePage({ params }: PageProps) {
         },
       },
       pedido: { select: { id: true, numeroPedido: true, estado: true } },
+      items: true,
     },
   });
 
@@ -69,6 +70,10 @@ export default async function CotizacionDetallePage({ params }: PageProps) {
       orderBy: { nombre: "asc" },
       select: { id: true, nombre: true, valorMinuto: true, valorHora: true },
     }),
+    prisma.insumo.findMany({
+      orderBy: { nombre: "asc" },
+      select: { id: true, codigoItem: true, nombre: true, valorUnidad: true },
+    }),
   ]);
 
   return (
@@ -101,11 +106,13 @@ export default async function CotizacionDetallePage({ params }: PageProps) {
         maquina: cotizacion.maquina,
         resina: cotizacion.resina,
         pedido: cotizacion.pedido,
+        items: cotizacion.items,
       }}
       clientes={clientes}
       maquinas={maquinas}
       resinas={resinas}
       personal={personal}
+      insumos={insumos}
     />
   );
 }

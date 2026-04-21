@@ -183,6 +183,7 @@ export const cotizacionSchema = z.object({
   volumenPieza: z.coerce.number().nonnegative("El volumen debe ser positivo o cero").optional().or(z.literal("").transform(() => 0)),
   insumosExtra: z.coerce.number().nonnegative("Los insumos deben ser positivos o cero").default(0),
   porcentajeGanancia: z.coerce.number().min(0).max(500, "% ganancia máx. 500").default(30),
+  insumosData: z.string().optional(),
 });
 
 export type CotizacionInput = z.infer<typeof cotizacionSchema>;

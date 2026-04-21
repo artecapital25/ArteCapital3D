@@ -34,6 +34,10 @@ export default async function NuevaCotizacionPage() {
       orderBy: { nombre: "asc" },
       select: { id: true, nombre: true, valorMinuto: true, valorHora: true },
     }),
+    prisma.insumo.findMany({
+      orderBy: { nombre: "asc" },
+      select: { id: true, codigoItem: true, nombre: true, valorUnidad: true },
+    }),
   ]);
 
   return (
@@ -42,6 +46,7 @@ export default async function NuevaCotizacionPage() {
       maquinas={maquinas}
       resinas={resinas}
       personal={personal}
+      insumos={insumos}
     />
   );
 }

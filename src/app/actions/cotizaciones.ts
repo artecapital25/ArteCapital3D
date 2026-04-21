@@ -80,6 +80,22 @@ export async function crearCotizacion(
       cantidad: data.cantidad,
     });
 
+    let parsedInsumos: any[] = [];
+    if (data.insumosData) {
+      try {
+        parsedInsumos = JSON.parse(data.insumosData).map((i: any) => ({
+          insumoId: i.insumoId,
+          item: i.nombre,
+          descripcion: i.descripcion || "Insumo Fraccionado",
+          cantidad: Number(i.cantidad),
+          valorUnitario: Number(i.valorUnidad),
+          subtotal: Number(i.subtotal),
+        }));
+      } catch (e) {
+        console.error("Error parseando insumosData:", e);
+      }
+    }
+
     const numeroCot = await generarNumeroCotizacion();
 
     const cotizacion = await prisma.cotizacion.create({
@@ -105,6 +121,9 @@ export async function crearCotizacion(
         valorUnidad: resultado.valorUnidad,
         valorTotal: resultado.valorTotal,
         estado: "pendiente",
+        items: {
+          create: parsedInsumos,
+        },
       },
     });
 
@@ -191,6 +210,22 @@ export async function editarCotizacion(
       cantidad: data.cantidad,
     });
 
+    let parsedInsumos: any[] = [];
+    if (data.insumosData) {
+      try {
+        parsedInsumos = JSON.parse(data.insumosData).map((i: any) => ({
+          insumoId: i.insumoId,
+          item: i.nombre,
+          descripcion: i.descripcion || "Insumo Fraccionado",
+          cantidad: Number(i.cantidad),
+          valorUnitario: Number(i.valorUnidad),
+          subtotal: Number(i.subtotal),
+        }));
+      } catch (e) {
+        console.error("Error parseando insumosData:", e);
+      }
+    }
+
     await prisma.cotizacion.update({
       where: { id },
       data: {
@@ -213,6 +248,10 @@ export async function editarCotizacion(
         porcentajeGanancia: data.porcentajeGanancia,
         valorUnidad: resultado.valorUnidad,
         valorTotal: resultado.valorTotal,
+        items: {
+          deleteMany: {},
+          create: parsedInsumos,
+        },
       },
     });
 

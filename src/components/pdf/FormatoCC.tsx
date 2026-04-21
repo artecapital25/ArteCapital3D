@@ -193,6 +193,7 @@ interface FormatoCCProps {
     valorUnidad: number;
     valorTotal: number;
     fecha: Date;
+    volumenPieza: number | null;
     cliente: {
       nombre: string;
       codigo: string;
@@ -273,6 +274,11 @@ export default function FormatoCC({ cotizacion }: FormatoCCProps) {
                   ]}
                 >
                   {cotizacion.descripcion}
+                </Text>
+              )}
+              {cotizacion.volumenPieza && (
+                <Text style={[styles.tableCell, { color: "#e91e8c", fontSize: 8, marginTop: 4, fontWeight: 600 }]}>
+                  Tamaño / Volumen: {cotizacion.volumenPieza} cm³
                 </Text>
               )}
               <Text

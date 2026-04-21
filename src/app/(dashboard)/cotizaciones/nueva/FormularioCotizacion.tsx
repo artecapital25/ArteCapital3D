@@ -39,6 +39,12 @@ interface Props {
     valorMinuto: number;
     valorHora: number;
   }[];
+  insumos: {
+    id: string;
+    codigoItem: string;
+    nombre: string;
+    valorUnidad: number;
+  }[];
   // For edit mode
   cotizacion?: {
     id: string;
@@ -56,6 +62,7 @@ interface Props {
     volumenPieza: number | null;
     costoInsumos: number;
     porcentajeGanancia: number;
+    items?: any[];
   };
   personalSeleccionado?: string;
 }
@@ -65,6 +72,7 @@ export default function FormularioCotizacion({
   maquinas,
   resinas,
   personal,
+  insumos,
   cotizacion,
   personalSeleccionado,
 }: Props) {
@@ -94,9 +102,13 @@ export default function FormularioCotizacion({
   const [volumenPieza, setVolumenPieza] = useState(
     cotizacion?.volumenPieza || 0
   );
-  const [insumosExtra, setInsumosExtra] = useState(
-    cotizacion?.costoInsumos || 0
-  );
+  
+  // Dynamic JSON Insumos State
+  const [insumosList, setInsumosList] = useState<any[]>(cotizacion?.items || []);
+  const [selectedInsumoId, setSelectedInsumoId] = useState("");
+  const [selectedInsumoCantidad, setSelectedInsumoCantidad] = useState(1);
+  const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
+
   const [porcentajeGanancia, setPorcentajeGanancia] = useState(
     cotizacion?.porcentajeGanancia || 30
   );
@@ -112,6 +124,34 @@ export default function FormularioCotizacion({
   const maquinaSeleccionada = maquinas.find((m) => m.id === maquinaId);
   const resinaSeleccionada = resinas.find((r) => r.id === resinaId);
   const personalSeleccionadoData = personal.find((p) => p.id === personalId);
+
+  // Auto sum of selected insumos array
+  const insumosExtra = useMemo(() => {
+    return insumosList.reduce((acc, current) => acc + current.subtotal, 0);
+  }, [insumosList]);
+
+  const agregarInsumo = () => {
+    const sum = insumos.find((i) => i.id === selectedInsumoId);
+    if (!sum) return;
+    if (selectedInsumoCantidad <= 0) return;
+    const sub = sum.valorUnidad * selectedInsumoCantidad;
+
+    setInsumosList([
+      ...insumosList,
+      {
+        idUnico: Date.now(),
+        insumoId: sum.id,
+        nombre: sum.nombre,
+        cantidad: selectedInsumoCantidad,
+        valorUnidad: sum.valorUnidad,
+        subtotal: sub,
+        descripcion: `Fraccionado de ${sum.nombre}`,
+      },
+    ]);
+
+    setSelectedInsumoId("");
+    setSelectedInsumoCantidad(1);
+  };
 
   // Real-time cost calculation
   const resultado = useMemo(() => {
@@ -463,18 +503,69 @@ export default function FormularioCotizacion({
             </h3>
 
             <div className="field-grid">
-              <div className="form-field">
-                <label>Insumos extra ($)</label>
+              <div className="form-field span-2">
+                <label>Insumos de Inventario</label>
+                <div className="insumos-selector">
+                  <select
+                    value={selectedInsumoId}
+                    onChange={(e) => setSelectedInsumoId(e.target.value)}
+                    style={{ flex: 2 }}
+                  >
+                    <option value="">Buscar insumo...</option>
+                    {insumos.map((ins) => (
+                      <option key={ins.id} value={ins.id}>
+                        {ins.codigoItem} — {ins.nombre} ({formatearMoneda(ins.valorUnidad)}/u)
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="Ej: 0.10"
+                    value={selectedInsumoCantidad}
+                    onChange={(e) =>
+                      setSelectedInsumoCantidad(parseFloat(e.target.value) || 0)
+                    }
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-add-insumo"
+                    onClick={agregarInsumo}
+                  >
+                    + Añadir
+                  </button>
+                </div>
+
+                {insumosList.length > 0 && (
+                  <div className="insumos-lista">
+                    {insumosList.map((i, index) => (
+                      <div key={i.idUnico || index} className="insumos-item">
+                        <span>
+                          {i.cantidad}x {i.nombre}
+                        </span>
+                        <span className="ins-sub">
+                          {formatearMoneda(i.subtotal)}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setInsumosList(
+                                insumosList.filter((_, idx) => idx !== index)
+                              )
+                            }
+                          >
+                            ×
+                          </button>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <input
-                  type="number"
-                  name="insumosExtra"
-                  value={insumosExtra}
-                  onChange={(e) =>
-                    setInsumosExtra(parseFloat(e.target.value) || 0)
-                  }
-                  min={0}
-                  step="100"
-                  placeholder="0"
+                  type="hidden"
+                  name="insumosData"
+                  value={JSON.stringify(insumosList)}
                 />
               </div>
 
@@ -624,6 +715,19 @@ export default function FormularioCotizacion({
         </div>
       </form>
 
+      {/* Mobile Floating Action Button */}
+      <button
+        type="button"
+        className="mobile-fab"
+        onClick={() => setIsMobilePanelOpen(!isMobilePanelOpen)}
+      >
+        <Calculator size={20} />
+        {isMobilePanelOpen ? "Ocultar panel" : "Ver Costos"}
+        <span className="fab-badge">
+          {formatearMoneda(resultado.valorTotal)}
+        </span>
+      </button>
+
       <style jsx>{`
         .toast {
           position: fixed;
@@ -696,9 +800,25 @@ export default function FormularioCotizacion({
           .form-layout {
             grid-template-columns: 1fr;
           }
-          .cost-panel {
-            order: -1;
+          .mobile-fab {
+            display: flex !important;
           }
+          .cost-panel {
+            display: ${isMobilePanelOpen ? "block" : "none"};
+            position: fixed;
+            bottom: 5rem;
+            left: 1rem;
+            right: 1rem;
+            z-index: 100;
+            box-shadow: 0 -4px 25px rgba(0,0,0,0.6);
+            opacity: ${isMobilePanelOpen ? "1" : "0"};
+            animation: slideUp 0.3s ease-out;
+          }
+        }
+        
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
         }
 
         .form-column {
@@ -995,6 +1115,105 @@ export default function FormularioCotizacion({
           font-size: 0.9375rem;
           font-weight: 700;
           color: var(--text-primary);
+        }
+
+        /* ========== NUEVOS ESTILOS INSUMOS & FAB ========== */
+        .mobile-fab {
+          display: none;
+          position: fixed;
+          bottom: 1.5rem;
+          right: 1.5rem;
+          z-index: 101;
+          background: var(--gradient-primary);
+          color: white;
+          border: none;
+          border-radius: 9999px;
+          padding: 0.8rem 1.25rem;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+          cursor: pointer;
+        }
+
+        .fab-badge {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 0.2rem 0.5rem;
+          border-radius: 99px;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 0.8rem;
+          margin-left: 0.25rem;
+        }
+
+        .insumos-selector {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+          margin-top: 0.25rem;
+        }
+
+        .btn-add-insumo {
+          padding: 0.625rem 1rem;
+          background: rgba(0, 180, 216, 0.1);
+          color: var(--accent-primary);
+          border: 1px solid var(--accent-primary);
+          border-radius: var(--radius-sm);
+          font-weight: 600;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: all 0.2s;
+        }
+
+        .btn-add-insumo:hover {
+          background: var(--accent-primary);
+          color: white;
+        }
+
+        .insumos-lista {
+          margin-top: 0.75rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+        }
+
+        .insumos-item {
+          display: flex;
+          justify-content: space-between;
+          background: var(--bg-card);
+          padding: 0.5rem 0.75rem;
+          border-radius: var(--radius-sm);
+          font-size: 0.85rem;
+          border: 1px solid var(--border-color);
+          align-items: center;
+        }
+
+        .ins-sub {
+          display: flex;
+          gap: 0.75rem;
+          align-items: center;
+          font-family: "JetBrains Mono", monospace;
+          color: var(--text-primary);
+          font-weight: 600;
+        }
+
+        .ins-sub button {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: var(--accent-danger);
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+
+        .ins-sub button:hover {
+          background: #ef4444;
+          color: white;
         }
       `}</style>
     </>

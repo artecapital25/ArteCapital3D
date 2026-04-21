@@ -92,6 +92,12 @@ interface Props {
     valorMinuto: number;
     valorHora: number;
   }[];
+  insumos: {
+    id: string;
+    codigoItem: string;
+    nombre: string;
+    valorUnidad: number;
+  }[];
 }
 
 const estadoConfig: Record<
@@ -124,6 +130,7 @@ export default function CotizacionDetalle({
   maquinas,
   resinas,
   personal,
+  insumos,
 }: Props) {
   const router = useRouter();
   const [mode, setMode] = useState<"view" | "edit">("view");
@@ -153,6 +160,7 @@ export default function CotizacionDetalle({
         maquinas={maquinas}
         resinas={resinas}
         personal={personal}
+        insumos={insumos}
         cotizacion={cotizacion}
       />
     );

@@ -293,6 +293,11 @@ export default function FormatoCOT({ cotizacion }: FormatoCOTProps) {
                   {cotizacion.descripcion}
                 </Text>
               )}
+              {cotizacion.volumenPieza && (
+                <Text style={[styles.tableCell, { color: "#00b4d8", fontSize: 8, marginTop: 4, fontWeight: 600 }]}>
+                  Tamaño / Volumen: {cotizacion.volumenPieza} cm³
+                </Text>
+              )}
             </View>
             <Text style={[styles.tableCell, styles.col2]}>{cotizacion.cantidad}</Text>
             <Text style={[styles.tableCell, styles.col3]}>{formatCOP(cotizacion.valorUnidad)}</Text>
@@ -302,71 +307,13 @@ export default function FormatoCOT({ cotizacion }: FormatoCOTProps) {
           </View>
         </View>
 
-        {/* Cost Breakdown */}
-        <Text style={styles.sectionTitle}>Desglose de Costos</Text>
-        <View style={styles.totalSection}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Energía:</Text>
-            <Text style={styles.totalValue}>{formatCOP(cotizacion.costoEnergia)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Resina:</Text>
-            <Text style={styles.totalValue}>{formatCOP(cotizacion.costoResina)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Mano de obra:</Text>
-            <Text style={styles.totalValue}>{formatCOP(cotizacion.costoManoObra)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Insumos:</Text>
-            <Text style={styles.totalValue}>{formatCOP(cotizacion.costoInsumos)}</Text>
-          </View>
-          <View style={[styles.totalRow, { borderTop: "1px solid #e2e8f0", paddingTop: 8 }]}>
-            <Text style={[styles.totalLabel, { fontWeight: 600 }]}>Costo base:</Text>
-            <Text style={styles.totalValue}>{formatCOP(cotizacion.costoBase)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>
-              Ganancia ({cotizacion.porcentajeGanancia}%):
-            </Text>
-            <Text style={[styles.totalValue, { color: "#22c55e" }]}>
-              +{formatCOP(ganancia)}
-            </Text>
-          </View>
+        {/* Cost Final */}
+        <View style={[styles.totalSection, { marginTop: 40 }]}>
           <View style={styles.totalFinal}>
-            <Text style={styles.totalFinalLabel}>TOTAL:</Text>
+            <Text style={styles.totalFinalLabel}>TOTAL A PAGAR:</Text>
             <Text style={styles.totalFinalValue}>{formatCOP(cotizacion.valorTotal)}</Text>
           </View>
         </View>
-
-        {/* Technical info */}
-        {(cotizacion.maquina || cotizacion.resina) && (
-          <>
-            <Text style={styles.sectionTitle}>Especificaciones Técnicas</Text>
-            {cotizacion.maquina && (
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Máquina:</Text>
-                <Text style={styles.infoValue}>
-                  {cotizacion.maquina.nombre} ({cotizacion.maquina.tipo})
-                </Text>
-              </View>
-            )}
-            {cotizacion.resina && (
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Resina:</Text>
-                <Text style={styles.infoValue}>
-                  {cotizacion.resina.tipo} — {cotizacion.resina.marca} ({cotizacion.resina.color})
-                </Text>
-              </View>
-            )}
-            {cotizacion.volumenPieza && (
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Volumen pieza:</Text>
-                <Text style={styles.infoValue}>{cotizacion.volumenPieza} cm³</Text>
-              </View>
-            )}
-          </>
-        )}
 
         {/* Footer */}
         <View style={styles.footer}>
