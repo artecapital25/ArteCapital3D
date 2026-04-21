@@ -130,18 +130,18 @@ export default function OrdenesTable({ ordenes }: { ordenes: Orden[] }) {
                   </td>
                   <td className="px-6 py-4">
                     {oc.estado === "pendiente" && (
-                      <span className="bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2.5 py-1 rounded-full text-xs font-semibold mr-2 tracking-wide uppercase">
+                      <span className="bg-amber-500/10 text-amber-500 border border-amber-500/20 px-3 py-1.5 rounded-md text-xs font-semibold mr-2 tracking-wide uppercase">
                         En camino
                       </span>
                     )}
                     {oc.estado === "recibida" && (
-                      <span className="bg-green-500/10 text-green-500 border border-green-500/20 px-2.5 py-1 rounded-full text-xs font-semibold mr-2 tracking-wide uppercase flex items-center w-fit gap-1">
+                      <span className="bg-green-500/10 text-green-500 border border-green-500/20 px-3 py-1.5 rounded-md text-xs font-semibold mr-2 tracking-wide uppercase flex items-center w-fit gap-1">
                         <Check size={12} />
                         Recibida
                       </span>
                     )}
                      {oc.estado === "cancelada" && (
-                      <span className="bg-red-500/10 text-red-500 border border-red-500/20 px-2.5 py-1 rounded-full text-xs font-semibold mr-2 tracking-wide flex items-center w-fit gap-1">
+                      <span className="bg-red-500/10 text-red-500 border border-red-500/20 px-3 py-1.5 rounded-md text-xs font-semibold mr-2 tracking-wide flex items-center w-fit gap-1">
                         <X size={12} />
                         Cancelada
                       </span>

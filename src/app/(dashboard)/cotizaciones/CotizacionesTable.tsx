@@ -486,8 +486,8 @@ export default function CotizacionesTable({
           display: inline-flex;
           align-items: center;
           gap: 0.375rem;
-          padding: 0.25rem 0.625rem;
-          border-radius: 9999px;
+          padding: 0.375rem 0.75rem;
+          border-radius: var(--radius-md);
           font-size: 0.75rem;
           font-weight: 600;
           text-transform: capitalize;
